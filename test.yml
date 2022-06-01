@@ -1,0 +1,22 @@
+---
+
+- name: oracle packages
+  hosts: all
+  become: yes
+  gather_facts: false
+  tasks:
+        - name: yum update
+          yum:
+               name: '*'
+               state: latest
+          
+
+                   
+
+
+                    
+                 
+
+
+               
+

@@ -1,0 +1,17 @@
+---
+
+- name: install apache
+  ignore_errors: yes
+  hosts: all
+  become: yes
+  gather_facts: false
+  tasks:
+      - name: install httpd
+        package:
+            name: httpd
+            state: latest
+      - debug:
+          msg: were done
+
+
+
