@@ -1,0 +1,87 @@
+---
+# tasks file for oracle
+#
+- name: install oracle packages
+  yum:
+     name: 
+       - ksh
+       - gcc-c++
+       - binutils
+       - make
+       - gcc
+     state: absent
+ 
+
+- name: create group
+  group:
+       name: oinstall
+       gid: 1100
+       state: present
+
+- name: create group1
+  group:
+       name: dba
+       gid: 1101
+       state: present
+
+- name: create group2
+  group:
+       name: oper
+       gid: 1102
+       state: present
+- name: add user 
+  user:
+     name: "{{ oracle_user }}"
+     state: present
+     uid: "{{ oracle_id }}"
+     shell: /bin/bash
+     groups: dba,oper
+     password: "{{ oracle_pwd | password_hash ('sha256') }}"
+     home: /home/oracle
+     
+- name: create group authorization
+  file:
+      path: /etc/sudoers.d/10_fn_informatique_prod_dba_su
+      state: file
+      owner: root
+      group: root
+      mode: 0440
+- name: create limits config directory
+  file:
+   state: directory
+   path: /etc/security/limits.d
+   owner: root
+   group: root
+   mode: 0644
+- name: create user limits
+  pam_limits:
+    domain: oracle
+    limit_type: "{{ item.limit_type }}"
+    limit_item: "{{ item.limit_item }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { limit_type: 'hard', limit_item: 'nofile', value: 2047 }
+    - { limit_type: 'soft', limit_item: 'nofile', value: 65536 }
+    - { limit_type: 'hard', limit_item: 'nproc', value: 65536 }
+    - { limit_type: 'soft', limit_item: 'nproc' , value: 2047 }
+    - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
+    - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
+    - { limit_type: 'hard', limit_item: 'stack' , value: 32768 }
+    - { limit_type: 'soft', limit_item: 'stack' , value: 10240 }  
+- name: create mount point
+  file:
+    state: directory
+    path: /srv/oradb/oracle/admin
+    owner: oracle
+    group: oinstall
+    mode: 0750  
+- name: assign host based on first char
+  shell:
+    cmd: echo $HOSTNAME | cut -c 1
+  register: char
+- name: add new host
+  add_host:
+    hostname: client1-ansible.local
+    env: "dev" 
+  when: char.stdout == 'c'
+    

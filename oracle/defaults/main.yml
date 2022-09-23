@@ -1,0 +1,25 @@
+---
+# defaults file for oracle
+#
+#
+##
+instance: "changeme"
+tunned_package: "tuned-profile-oacle"
+enable_hugepages: "false"
+oracle_version: "12.1.0.2"
+oracle_patch_release: "latest"
+build_rdbms: "false"
+oracle_national_charset: "AL16UTF16"
+oracle_user: "oracle"
+oracle_id: "1100"
+oracle_pwd: "!!"
+redo_1initial_size: "2G"
+redo2_initial_size: "2G"
+admin_initial_size: "120M"
+oraclebin_initial_size: "120M"
+orafra_initial_size: "40G"
+oradump_initial_size: "120M"
+oraarch_initial_size: "120M"
+dum_accessmode: "0750"
+backup_accessmode: "0770" 
+ 
